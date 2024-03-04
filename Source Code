@@ -1,0 +1,168 @@
+#include <stdio.h>
+#include <string.h>
+
+#define SNACKS 12
+#define PLACES 4
+#define THEATRES 4
+#define MOVIES 4
+#define SCREENS 4
+#define SHOWTIMES 5
+#define r 5
+#define c 5
+
+struct Viewer 
+{
+    int seatno;
+    char name[50];
+    char gender;
+};
+
+int placesindex,theatresindex,moviesindex,screensindex,seatsindex,countindex,snacksindex,i;
+
+int bookedSeats[r][c]={0};
+int selectedsnacks[SNACKS]={0};
+
+void displayPlaces(),displayTheatres(),displayMovies(),displayScreens(),displayShowtimes(),displaySnacks();
+
+char snacks[SNACKS][50] = {"", "NACHOS", "CANDY", "ICE CREAM", "POPCORN", "PRETZEL/PRETZEL BITES", "HOT DOG", "ICEE", "CHEESE BITES", "CHICKEN TENDERS", "FLATBREAD PIZZA", "FRIES" };
+int numSnacks = sizeof(snacks) / sizeof(snacks[0]);
+char places[PLACES][50] = {"", "KARUR", "ERODE", "COIMBATORE"};
+char theatres[PLACES][THEATRES][50] = {{""}, {"", "AJANTHA ELLORA COMPLEX", "THINNAPPA THEATRE", "KRISHNA THEATRE"}, {"", "MAHARAJA VSP CINEMAS", "SHREE CHANDIKA CINEMAS", "AANOOR THEATRE"}, {"", "KARPAGAM THEATRES PRIVATE LIMITED", "KG CINEMAS", "BABA CINEMAS"}};
+char movies[PLACES][THEATRES][MOVIES][50] = {{""}, { {""}, {"", "JOE", "LEO", "JAWAN"}, {"", "SALAAR", "JOE", "LEO"}, {"", "JAWAN", "SALAAR", "JOE"} }, { {""}, {"", "JOE", "LEO", "JAWAN"}, {"", "SALAAR", "JOE", "LEO"}, {"", "JAWAN", "SALAAR", "JOE"} }, { {""}, {"", "JOE", "LEO", "JAWAN"}, {"", "SALAAR", "JOE", "LEO"}, {"", "JAWAN", "SALAAR", "JOE"} }};
+char screens[PLACES][THEATRES][MOVIES][SCREENS][50] = {{""}, { {""}, { {""}, {"", "SCREEN : 1"}, {"", "SCREEN : 2"}, {"", "SCREEN : 3"} }, { {""}, {"", "SCREEN : 3"}, {"", "SCREEN : 1"}, {"", "SCREEN : 2"} }, { {""}, {"", "SCREEN : 2"}, {"", "SCREEN : 3"}, {"", "SCREEN : 1"} } }, { {""}, { {""}, {"", "SCREEN : 1"}, {"", "SCREEN : 2"}, {"", "SCREEN : 3"} }, { {""}, {"", "SCREEN : 3"}, {"", "SCREEN : 1"}, {"", "SCREEN : 2"} }, { {""}, {"", "SCREEN : 2"}, {"", "SCREEN : 3"}, {"", "SCREEN : 1"} } }, { {""}, { {""}, {"", "SCREEN : 1"}, {"", "SCREEN : 2"}, {"", "SCREEN : 3"} }, { {""}, {"", "SCREEN : 3"}, {"", "SCREEN : 1"}, {"", "SCREEN : 2"} }, { {""}, {"", "SCREEN : 2"}, {"", "SCREEN : 3"}, {"", "SCREEN : 1"} } }};
+char showtimes[PLACES][THEATRES][MOVIES][SHOWTIMES][50] = {{""}, { {""}, { {""}, {"", "10:30 AM"}, {"", "02:30 PM"}, {"", "05:30 PM"} }, { {""}, {"", "10:30 AM"}, {"", "02:30 PM"}, {"", "05:30 PM"} }, { {""}, {"", "09:30 PM"}, {"", "10:30 AM"}, {"", "02:30 PM"} } }, { {""}, { {""}, {"", "05:30 PM"}, {"", "09:30 PM"}, {"", "10:30 AM"} }, { {""}, {"", "02:30 PM"}, {"", "05:30 PM"}, {"", "09:30 PM"} }, { {""}, {"", "10:30 AM"}, {"", "02:30 PM"}, {"", "05:30 PM"} } }, { {""}, { {""}, {"", "09:30 PM"}, {"", "09:30 PM"}, {"", "10:30 AM"} }, { {""}, {"", "02:30 PM"}, {"", "05:30 PM"}, {"", "09:30 PM"} }, { {""}, {"", "10:30 AM"}, {"", "02:30 PM"}, {"", "05:30 PM"} } }};
+
+int main()
+{
+    while (1)
+    {
+        printf("Welcome to Movie Ticket Booking Portal.\n\n");
+        displayPlaces();
+        printf("\nPlease select the places : ");
+        scanf("%d", &placesindex);
+        displayTheatres(placesindex);
+        printf("\nPlease select the theatre : ");
+        scanf("%d", &theatresindex);
+        displayMovies(placesindex, theatresindex);
+        printf("\nPlease select the movie : ");
+        scanf("%d", &moviesindex);
+        displayScreens(placesindex, theatresindex, moviesindex);
+        displayShowtimes(placesindex, theatresindex, moviesindex);
+        printf("\nAvailable seats :\n\n");
+
+        for(int i=0;i<r;i++)
+        {
+            for (int j=0;j<c;j++)
+            {
+                int n=i*c+j+1;
+                if (bookedSeats[i][j]==1)
+                {
+                    printf("--- ");
+                }
+                else
+                {
+                    printf("%03d ",n);
+                }
+            }
+            printf("\n");
+            if (i*c+c>=25)
+            {
+                break;
+            }
+        }
+
+        printf("\nPlease enter the no of seats required : ");
+        scanf("%d", &countindex);
+        struct Viewer viewers[countindex];
+        printf("\nPlease enter details of the viewer : ");
+        printf("\n");
+
+        for (int i = 0; i < countindex; i++)
+        {
+            printf("%d. Seat no      : ", i + 1);
+            scanf("%d", &viewers[i].seatno);
+            printf("   Name         : ");
+            scanf("%s", viewers[i].name);
+            printf("   Gender (M/F) : ");
+            scanf(" %c", &viewers[i].gender);
+            printf("\n");
+
+            bookedSeats[(viewers[i].seatno-1)/c][(viewers[i].seatno-1)%c]=1;
+        }
+
+        printf("\nViewers tickets :\n");
+
+        for (int i = 0; i < countindex; i++)
+        {
+            printf("%d.Seat: %03d   Name: %s   Gender: %c   Price : 150\n", i + 1, viewers[i].seatno, viewers[i].name, viewers[i].gender);
+        }
+
+        printf("\nTotal cost of the tickets you buy : %d/-", countindex * 150);
+        printf("\nYou can also book snacks, which will be delivered to your respective seats during interval.\n\n");
+        displaySnacks();
+        printf("\nPlease select the snacks required : ");
+        do
+        {
+            scanf("%d",&snacksindex);
+        }
+        while(snacksindex!=0);
+        printf("\nThe snacks that you have selected : ");
+        
+        for (int i=0;i<numSnacks;i++) 
+        {
+        if (selectedsnacks[i] == 1) 
+        {
+            printf("- %s\n", snacks[i]);
+        }
+    }
+        printf("\n\nThank you... for booking tickets through our portal\n\n");
+        printf("*************************\n\n");
+    }
+}
+void displayPlaces()
+{
+    printf("Places : \n");
+    for(char i=1;i<PLACES;i++)
+    {
+        printf("%d. %s\n",(i),places[i]);
+    }
+}
+void displayTheatres(int placesindex)
+{
+    printf("\nTheatres : \n");
+    for(int i=1;i<THEATRES;i++)
+    {
+        printf("%d. %s\n",(i),theatres[placesindex][i]);
+    }
+}
+void displayMovies(int placesindex,int theatresindex)
+{
+    printf("\nMovies : \n");
+    for(int i=1;i<MOVIES;i++)
+    {
+        printf("%d. %s\n",(i),movies[placesindex][theatresindex][i]);
+    }
+}
+void displayScreens(int placesindex,int theatresindex,int moviesindex)
+{
+    for(int i=1;i<SCREENS-2;i++)
+    {
+        printf("\n%s\n",screens[placesindex][theatresindex][moviesindex][i]);
+    }
+}
+void displayShowtimes(int placesindex,int theatresindex,int moviesindex,int screensindex)
+{
+for(int i=1;i<SHOWTIMES-3;i++)
+    {
+        printf("\nMovie show timings : %s\n",showtimes[placesindex][theatresindex][moviesindex][i]);
+    }
+}
+void displaySnacks()
+{
+    printf("Snacks Availale : \n");
+    for(char i=1;i<SNACKS;i++)
+    {
+        printf("%d. %s\n",(i),snacks[i]);
+    }
+}
+
